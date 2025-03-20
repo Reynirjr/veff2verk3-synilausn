@@ -1,12 +1,14 @@
 import { PrismaClient } from '@prisma/client';
 const prisma = new PrismaClient();
 async function main() {
-  const categories = await prisma.category.createManyAndReturn({
-    data: [
-      { name: 'HTML', slug: 'html' },
-      { name: 'CSS', slug: 'css' },
-      { name: 'JavaScript', slug: 'javascript' },
-    ],
+  const categoriesToCreate = [
+    { name: 'HTML', slug: 'html' },
+    { name: 'CSS', slug: 'css' },
+    { name: 'JavaScript', slug: 'javascript' },
+  ];
+  await prisma.category.createMany({ data: categoriesToCreate });
+  const categories = await prisma.category.findMany({
+    where: { slug: { in: categoriesToCreate.map((c) => c.slug) } },
   });
 
   console.log('Created categories:', categories.length);
